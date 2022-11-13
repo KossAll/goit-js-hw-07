@@ -2,11 +2,12 @@
 import { galleryItems } from './gallery-items.js';
 // Change code below this line
 
-const allPictures = document.querySelector(`.gallery`);
+const allPicturesContainer = document.querySelector(`.gallery`);
 const cardPictures = createPicturesColection(galleryItems);
 
-allPictures.insertAdjacentHTML(`beforeend`, cardPictures);
-allPictures.addEventListener(`click`, onPalletContainerPictures);
+allPicturesContainer.insertAdjacentHTML(`beforeend`, cardPictures);
+allPicturesContainer.addEventListener(`click`, onPalletContainerPictures);
+
 
 function createPicturesColection(galleryItems) {
     return galleryItems = galleryItems.map(({ preview, original, description }) => {
@@ -25,14 +26,34 @@ function createPicturesColection(galleryItems) {
     }).join(``);
 };
 
+function createModalWindow(changeImageAdress) {
+   window.instance = basicLightbox.create(`
+	 <img src="${changeImageAdress} "width="800" height="600"/>
+    `, {
+       onShow: () => {
+           window.addEventListener("keydown", closeModalWindowByEscPress)
+       },
+      onClose: () => {
+        window.removeEventListener("keydown", closeModalWindowByEscPress);
+      },
+   })
+    return instance; 
+};
+
 function onPalletContainerPictures(evt) {
+    evt.preventDefault();
     const isPicturesContainer = evt.target.classList.contains("gallery__image")
     if (!isPicturesContainer) {
-    return
+        return
     }
- 
+    const originalPictures = evt.target.dataset.source;
+    createModalWindow(originalPictures).show();
+};
 
-    
-    console.log(evt.target.dataset.source);
-} 
+function closeModalWindowByEscPress(evt) {
+  const ESC_KEY_CODE = "Escape";
+  if (evt.code === ESC_KEY_CODE && instance.visible()) {
+    instance.close();
+  }
+};
 
